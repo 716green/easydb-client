@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Props } from "@/types/general";
 import React from "react";
 import logo from "@/assets/react.svg";
+import { Link } from "react-router-dom";
 import {
   Cog6ToothIcon,
   ChevronLeftIcon,
@@ -24,10 +25,10 @@ const Layout: React.FC<Props> = ({ children }) => {
 
   return (
     <div className="flex w-full h-screen absolute">
-      <section className="absolute flex w-full ">
+      <section className="absolute flex w-full">
         <header
           style={{ marginLeft: sidebarWidth }}
-          className="bg-gray-200 h-16 w-full flex"
+          className="bg-gray-600 h-16 w-full flex transition-all shadow-md"
         >
           <div className="w-full flex justify-end mx-8">
             <div
@@ -42,13 +43,13 @@ const Layout: React.FC<Props> = ({ children }) => {
       <div
         id="sidebar"
         style={{ width: sidebarWidth }}
-        className="bg-gray-900 h-full absolute flex flex-col justify-between"
+        className="bg-gray-900 h-full absolute flex flex-col justify-between transition-all"
       >
         <header>
-          <div className="w-full h-16 flex">
+          <Link to="/" className="w-full h-16 flex">
             <div id="logo-wrapper" className="flex m-auto">
               {sidebarIsOpen && (
-                <span className="text-white text-2xl m-auto">EasyDB</span>
+                <span className="text-white text-2xl m-auto">LayerBase</span>
               )}
               <img
                 style={{
@@ -59,7 +60,7 @@ const Layout: React.FC<Props> = ({ children }) => {
                 alt="logo"
               />
             </div>
-          </div>
+          </Link>
           <section className="w-full h-16 flex border-y-2">
             <div
               id="logo-wrapper"
@@ -70,21 +71,26 @@ const Layout: React.FC<Props> = ({ children }) => {
                   Databases
                 </span>
               )}
-              <div
+              <button
                 style={{
                   marginLeft: sidebarIsOpen ? "16px" : "auto",
                 }}
                 className="flex mx-auto"
               >
                 <Cog6ToothIcon className="w-6 text-white m-auto" />
-              </div>
+              </button>
             </div>
           </section>
         </header>
         <section className="flex relative flex-col h-full">
           <ul className="text-white p-4 align-top mt-4">
-            {["item 1", "item 2"].map((item) => (
-              <li className="h-12">{item}</li>
+            {[
+              { name: "db1", url: "/db1" },
+              { name: "db2", url: "/db2" },
+            ].map((item, i) => (
+              <li key={i} className="h-12">
+                <Link to={item.url}>{item.name}</Link>
+              </li>
             ))}
           </ul>
         </section>
@@ -98,7 +104,12 @@ const Layout: React.FC<Props> = ({ children }) => {
           </button>
         </footer>
       </div>
-      <main className="overflow-auto">{children}</main>
+      <main
+        style={{ marginLeft: sidebarWidth }}
+        className="overflow-auto relative top-16 w-full transition-all h-[calc(100%-64px)]"
+      >
+        {children}
+      </main>
     </div>
   );
 };
