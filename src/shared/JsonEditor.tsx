@@ -1,10 +1,7 @@
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 
-const JsonEditor = ({
-  keyName = "myKey",
-  objValue = `{ "sample": "data" }`,
-}) => {
+const JsonEditor = ({ keyName = "myKey", objValue = `{}` }) => {
   const [newValue, setNewValue] = useState(objValue);
 
   useEffect(() => {
@@ -20,7 +17,7 @@ const JsonEditor = ({
 
   return (
     <main className="border-2 p-2 rounded">
-      {JSON.stringify(newValue)}
+      {/* {JSON.stringify(newValue)} */}
       <Editor
         height="50vh"
         options={{ fontSize: 18 }}
