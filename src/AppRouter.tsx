@@ -10,12 +10,11 @@ import Auth from "@/layout/Auth";
 import GlobalStateView from "@/debug/GlobalStateView";
 
 const Router = () => {
-  const { user, databaseList } = useContext(GlobalContext);
+  const { user } = useContext(GlobalContext);
   const [debug, setDebug] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(!!user?.uid);
 
   useEffect(() => {
-    console.log("setting isAuthenticated to", !!user?.uid);
     setIsAuthenticated(!!user?.uid);
   }, [user]);
 
