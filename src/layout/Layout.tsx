@@ -1,17 +1,30 @@
 import { useState, useEffect } from "react";
+import React, { useContext } from "react";
 import { Props } from "@/types/general";
-import React from "react";
-import logo from "@/assets/react.svg";
+import logo from "@/assets/logo.svg";
 import { Link } from "react-router-dom";
 import {
   Cog6ToothIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@heroicons/react/24/solid";
+import useAuth from "@/hooks/useAuth";
+import useApi from "@/hooks/useApi";
+import { GlobalContext } from "@/context";
 
 const Layout: React.FC<Props> = ({ children }) => {
+  const { databaseList, setDatabaseList, setDocName, docName } =
+    useContext(GlobalContext);
   const [sidebarWidth, setSidebarWidth] = useState("250px");
   const [sidebarIsOpen, setSidebarIsOpen] = useState(true);
+  const { logout } = useAuth();
+  const { api } = useApi();
+
+  useEffect(() => {
+    api.get("/databasesByUser").then(({ data }) => {
+      setDatabaseList(data?.documents);
+    });
+  }, []);
 
   useEffect(() => {
     if (sidebarWidth === "250px") {
@@ -31,12 +44,13 @@ const Layout: React.FC<Props> = ({ children }) => {
           className="bg-gray-600 h-16 w-full flex transition-all shadow-md"
         >
           <div className="w-full flex justify-end mx-8">
-            <div
+            <button
+              onClick={logout}
               id="avatar"
               className="rounded-full bg-blue-500 h-12 w-12 my-auto flex justify-center items-center"
             >
               A
-            </div>
+            </button>
           </div>
         </header>
       </section>
@@ -49,7 +63,7 @@ const Layout: React.FC<Props> = ({ children }) => {
           <Link to="/" className="w-full h-16 flex">
             <div id="logo-wrapper" className="flex m-auto">
               {sidebarIsOpen && (
-                <span className="text-white text-2xl m-auto">LayerBase</span>
+                <span className="text-white text-2xl m-auto">MVP DB</span>
               )}
               <img
                 style={{
@@ -83,16 +97,24 @@ const Layout: React.FC<Props> = ({ children }) => {
           </section>
         </header>
         <section className="flex relative flex-col h-full">
-          <ul className="text-white p-4 align-top mt-4">
-            {[
-              { name: "db1", url: "/db1" },
-              { name: "db2", url: "/db2" },
-            ].map((item, i) => (
-              <li key={i} className="h-12">
-                <Link to={item.url}>{item.name}</Link>
-              </li>
-            ))}
-          </ul>
+          {databaseList?.length && (
+            <ul className="text-white p-4 align-top mt-4">
+              {databaseList?.map((documentName: any, i: number) => (
+                <li key={i} className="h-12">
+                  <button
+                    onClick={() => {
+                      console.log(documentName);
+                      setDocName(documentName);
+                      window.location.href = "/db/" + documentName;
+                    }}
+                  >
+                    {documentName}
+                  </button>
+                  {/* <Link to={`/db/${documentName}`}>{documentName}</Link> */}
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
         <footer className="flex w-full justify-end border-t-2">
           <button onClick={toggleSidebarSize} className="flex p-4">
@@ -105,7 +127,7 @@ const Layout: React.FC<Props> = ({ children }) => {
         </footer>
       </div>
       <main
-        style={{ marginLeft: sidebarWidth }}
+        style={{ marginLeft: sidebarWidth, backgroundColor: "#1E1E1E" }}
         className="overflow-auto relative top-16 w-full transition-all h-[calc(100%-64px)]"
       >
         {children}

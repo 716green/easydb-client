@@ -1,38 +1,47 @@
+import { useContext, useEffect, useState } from "react";
 import App from "@/App";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { GlobalProvider } from "@/context";
 import Layout from "@/layout/Layout";
 import Home from "@/pages/Home";
-import Databases from "@/pages/Databases";
+import DatabaseEditor from "@/pages/DatabaseEditor";
+import { GlobalContext } from "@/context";
+import Auth from "@/layout/Auth";
+import GlobalStateView from "@/debug/GlobalStateView";
 
 const Router = () => {
+  const { user, databaseList } = useContext(GlobalContext);
+  const [debug, setDebug] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(!!user?.uid);
+
+  useEffect(() => {
+    console.log("setting isAuthenticated to", !!user?.uid);
+    setIsAuthenticated(!!user?.uid);
+  }, [user]);
+
+  useEffect(() => {
+    const handler = ({ key }: { key: any }) => key === "=" && setDebug(!debug);
+    document.addEventListener("keypress", handler);
+    return () => document.removeEventListener("keypress", handler);
+  });
+
   return (
     <>
       <GlobalProvider>
         <BrowserRouter>
-          <Layout>
-            <App>
-              <Routes>
-                <Route
-                  path="/db1"
-                  element={
-                    <Databases>
-                      <div>1</div>
-                    </Databases>
-                  }
-                />
-                <Route
-                  path="/db2"
-                  element={
-                    <Databases>
-                      <div>2</div>
-                    </Databases>
-                  }
-                />
-                <Route path="/" element={<Home />} />
-              </Routes>
-            </App>
-          </Layout>
+          {isAuthenticated ? (
+            <Layout>
+              <App>
+                <Routes>
+                  <Route path={`/db/*`} element={<DatabaseEditor />} />
+                  <Route path="/" element={<Home />} />
+                </Routes>
+              </App>
+            </Layout>
+          ) : (
+            <Auth />
+          )}
+          {debug && <GlobalStateView />}
         </BrowserRouter>
       </GlobalProvider>
     </>
